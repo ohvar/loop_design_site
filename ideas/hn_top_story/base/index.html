@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Loop — home, with the Hacker News top story</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="page">
+<header class="top"><span class="brand">Loop</span><span class="badge staging">Staging</span></header>
+<h1>Today's top story</h1>
+<p class="lede">The highest-voted story on Hacker News' front page right now, read live when this page opens.</p>
+
+<section class="card hn" id="hn" aria-live="polite">
+  <div class="eyebrow"><span><span class="y">Y</span>Top story on Hacker News</span><span id="rank"></span></div>
+  <div id="story">
+    <div class="skeleton" style="width:90%;height:22px;margin-bottom:8px"></div>
+    <div class="skeleton" style="width:60%;height:22px;margin-bottom:12px"></div>
+    <div class="skeleton" style="width:40%"></div>
+  </div>
+  <div class="foot"><span id="checked">Checking Hacker News…</span><button class="link" type="button" id="refresh">Refresh</button></div>
+</section>
+
+<div class="card">
+  <div class="status" style="margin-bottom:14px"><span class="dot"></span>Backend and database reachable</div>
+  <dl class="rows">
+    <div><dt>Environment</dt><dd>Staging</dd></div>
+    <div><dt>Running commit</dt><dd class="mono">4e1c2a9</dd></div>
+    <div><dt>Deployed</dt><dd>Oct 22, 18:40</dd></div>
+  </dl>
+</div>
+
+<div class="card">
+  <h2>Backend check</h2>
+  <p class="muted small" style="margin:0">Each press is saved in this environment's own database, then the total is read back.</p>
+  <div class="count" id="count">41</div>
+  <button class="primary" type="button" onclick="var c=document.getElementById('count');c.textContent=Number(c.textContent)+1">Say hello</button>
+</div>
+
+<nav class="screens">Design round 1 for <a href="https://github.com/ohvar/loop_app/issues/25">idea #25</a>. Try the states: <a href="index.html">live</a><a href="index.html?state=offline">Hacker News unreachable</a><a href="index.html?state=loading">loading</a></nav>
+</main>
+<script>
+// Mockup shortcut: the browser reads the public Hacker News API directly.
+// The real build would do this on the server and cache it.
+var API = "https://hacker-news.firebaseio.com/v0/";
+// Taken when the mockup was built, shown only if the API can't be reached.
+var SNAPSHOT = {"id": 50195110, "title": "eMudhra to exit global SSL/TLS certificate business", "url": "https://emudhra.com/en/press-release/emudhra-to-exit-global-ssl-tls-certificate-business", "score": 879, "by": "bo0tzz", "descendants": 600, "time": 1792676019, "rank": 12, "taken": "2026-10-22T22:44Z"};
+var FRONT_PAGE = 30;
+
+function ago(t) {
+  var s = Math.max(0, Date.now() / 1000 - t);
+  if (s < 3600) return Math.round(s / 60) + " min ago";
+  if (s < 86400) return Math.round(s / 3600) + " h ago";
+  return Math.round(s / 86400) + " d ago";
+}
+function esc(x) { return String(x).replace(/[&<>"]/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+
+function render(s, live) {
+  var card = document.getElementById("hn");
+  card.classList.toggle("stale", !live);
+  var link = s.url || ("https://news.ycombinator.com/item?id=" + s.id);
+  var domain = s.url ? new URL(s.url).hostname.replace(/^www\./, "") : "news.ycombinator.com";
+  var comments = "https://news.ycombinator.com/item?id=" + s.id;
+  document.getElementById("rank").textContent = "#" + s.rank + " of " + FRONT_PAGE;
+  document.getElementById("story").innerHTML =
+    '<a class="title" href="' + esc(link) + '" rel="noopener">' + esc(s.title) + '</a>' +
+    '<div class="domain">' + esc(domain) + '</div>' +
+    '<div class="stats">' +
+      '<span class="stat"><b>' + s.score + '</b> points</span>' +
+      '<span class="stat"><a href="' + comments + '" rel="noopener"><b>' + (s.descendants || 0) + '</b> comments</a></span>' +
+      '<span class="stat">by ' + esc(s.by) + ' · ' + ago(s.time) + '</span>' +
+    '</div>' +
+    '<p class="why">Most points of the ' + FRONT_PAGE + ' stories on the front page' + (s.rank > 1 ? ', even though it sits at #' + s.rank + '.' : '.') + '</p>';
+  document.getElementById("checked").textContent = live
+    ? "Checked " + new Date().toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})
+    : "Hacker News didn't answer. Showing a snapshot from " + SNAPSHOT.taken.replace("T", " ");
+}
+
+function loading() {
+  document.getElementById("rank").textContent = "";
+  document.getElementById("checked").textContent = "Checking Hacker News…";
+  document.getElementById("story").innerHTML =
+    '<div class="skeleton" style="width:90%;height:22px;margin-bottom:8px"></div>' +
+    '<div class="skeleton" style="width:60%;height:22px;margin-bottom:12px"></div>' +
+    '<div class="skeleton" style="width:40%"></div>';
+}
+
+function getJSON(u) {
+  var c = new AbortController();
+  var t = setTimeout(function () { c.abort(); }, 6000);
+  return fetch(u, {signal: c.signal}).then(function (r) { clearTimeout(t); if (!r.ok) throw new Error(r.status); return r.json(); });
+}
+
+function load() {
+  var state = new URLSearchParams(location.search).get("state");
+  loading();
+  if (state === "loading") return;
+  if (state === "offline") { render(SNAPSHOT, false); return; }
+  getJSON(API + "topstories.json")
+    .then(function (ids) {
+      ids = ids.slice(0, FRONT_PAGE);
+      return Promise.all(ids.map(function (id) { return getJSON(API + "item/" + id + ".json").catch(function () { return null; }); }))
+        .then(function (items) {
+          var best = null;
+          items.forEach(function (it, i) {
+            if (it && it.type === "story" && (!best || it.score > best.score)) { best = it; best.rank = i + 1; }
+          });
+          if (!best) throw new Error("no stories");
+          render(best, true);
+        });
+    })
+    .catch(function () { render(SNAPSHOT, false); });
+}
+document.getElementById("refresh").addEventListener("click", load);
+load();
+</script>
+</body>
+</html>
