@@ -1,1 +1,37 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Design</title></head><body><p>Nothing published yet.</p></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design</title>
+<style>
+  :root { color-scheme: light dark; --fg: #1a1a1a; --muted: #666; --bg: #fafafa; --card: #fff; --line: #e3e3e3; --accent: #2457d6; }
+  @media (prefers-color-scheme: dark) { :root { --fg: #ececec; --muted: #9a9a9a; --bg: #111; --card: #1b1b1b; --line: #2c2c2c; --accent: #7aa2ff; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 system-ui, -apple-system, sans-serif; color: var(--fg); background: var(--bg); }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 1.75rem; margin: 0 0 4px; }
+  .lede { color: var(--muted); margin: 0 0 28px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  h2 { font-size: 1.15rem; margin: 0 0 8px; }
+  ul { list-style: none; padding: 0; margin: 0; }
+  li + li { border-top: 1px solid var(--line); }
+  a { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; color: var(--accent); text-decoration: none; }
+  .who { color: var(--muted); font-size: 0.9rem; white-space: nowrap; }
+  .empty { color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+<h1>Design</h1>
+<p class="lede">Quick mockups of each idea, one per designer. These are sketches to react to, not the finished app.</p>
+<section>
+<h2>Mvp</h2>
+<ul>
+<li><a href="ideas/mvp/base/"><span>Design</span><span class="who">base</span></a></li>
+</ul>
+</section>
+</main>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Thread: stand up design, staging and prod</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="page">
+<header class="top"><a class="brand" href="index.html" style="color:inherit;text-decoration:none">&larr; Loop</a><span class="badge design">Design</span></header>
+<h1>Stand up design, staging and prod</h1>
+<p class="lede">Thread 1 of the design loop.</p>
+
+<div class="card">
+  <h2>The request, in the requester's words</h2>
+  <blockquote>I want design, staging, and prod, all three of them, to be live.</blockquote>
+  <div class="who">Asked out loud, recorded as said</div>
+</div>
+
+<div class="card">
+  <h2>Base designer <span class="pill">base</span></h2>
+  <p class="muted small" style="margin:0">One designer, no brief beyond the request. Mobile-first, because people open these on a phone.</p>
+  <div class="thumbs">
+    <a href="index.html">Design index<span>this site's front page</span></a>
+    <a href="staging.html">Staging app<span>live, with a backend check</span></a>
+    <a href="prod-empty.html">Prod, empty<span>before the first promote</span></a>
+    <a href="prod.html">Prod, live<span>after a promote</span></a>
+  </div>
+  <h2 style="margin-top:16px">Decisions</h2>
+  <ul class="decisions">
+    <li>Each site wears its name as a coloured badge, so a screenshot alone tells you which environment it came from.</li>
+    <li>The app proves itself: it shows which commit is running, and one button writes to the database and reads the count back.</li>
+    <li>Prod is honest when it is empty: it says nothing has been promoted yet, instead of showing a broken page.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>Feedback</h2>
+  <p class="muted small" style="margin:0">None for this round. This thread ran start to finish without feedback, and the build follows it as posted.</p>
+</div>
+<nav class="screens">Mockup screens: <a href="index.html">design index</a><a href="thread.html">design thread</a><a href="staging.html">staging app</a><a href="prod-empty.html">prod, before promote</a><a href="prod.html">prod, after promote</a></nav>
+</main>
+</body>
+</html>
